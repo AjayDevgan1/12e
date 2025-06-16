@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>AR Menu</title>
+    <script src="https://cdn.jsdelivr.net/npm/aframe@1.2.0/dist/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+      body, html { margin: 0; overflow: hidden; height: 100%; }
+      #overlay {
+        position: fixed;
+        bottom: 10%;
+        width: 100%;
+        text-align: center;
+        color: white;
+        font-family: sans-serif;
+        z-index: 2;
+        pointer-events: none;
+      }
+      .nav-buttons {
+        position: fixed;
+        bottom: 5%;
+        width: 100%;
+        text-align: center;
+        z-index: 3;
+      }
+      .nav-buttons button {
+        font-size: 20px;
+        margin: 0 20px;
+        padding: 10px 20px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="overlay">
+      <div id="food-name">Burger Engine</div>
+      <div id="food-price">Price: $3.50</div>
+      <div id="food-desc">Beef patty, bacon, tomato, lettuce, caramelized onion</div>
+    </div>
+    <div class="nav-buttons">
+      <button onclick="prevItem()">&lt;</button>
+      <button onclick="nextItem()">&gt;</button>
+    </div>
+
+    <a-scene mindar-image="imageTargetSrc: mindar/marker.mind; autoStart: true;" 
+             color-space="sRGB" renderer="antialias: true; alpha: true" 
+             embedded vr-mode-ui="enabled: false" 
+             device-orientation-permission-ui="enabled: true">
+      
+      <a-assets>
+        <a-asset-item id="burger" src="assets/burger.glb"></a-asset-item>
+        <a-asset-item id="pizza" src="assets/pizza.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-entity id="model"
+                  gltf-model="#burger"
+                  position="0 -0.1 0"
+                  scale="0.4 0.4 0.4"
+                  rotation="0 0 0"
+                  animation="property: rotation; to: 360 360 0; loop: true; dur: 10000">
+        </a-entity>
+      </a-entity>
+
+    </a-scene>
+
+    <script>
+      const models = [
+        {
+          id: "#burger",
+          name: "Burger Engine",
+          price: "Price: $3.50",
+          desc: "Beef patty, bacon, tomato, lettuce, caramelized onion"
+        },
+        {
+          id: "#pizza",
+          name: "Classic Pizza",
+          price: "Price: $4.00",
+          desc: "Mozzarella, basil, tomato sauce, and crispy crust"
+        }
+      ];
+      let currentIndex = 0;
+
+      function updateModel(index) {
+        const model = document.querySelector("#model");
+        model.setAttribute("gltf-model", models[index].id);
+        document.getElementById("food-name").textContent = models[index].name;
+        document.getElementById("food-price").textContent = models[index].price;
+        document.getElementById("food-desc").textContent = models[index].desc;
+      }
+
+      function nextItem() {
+        currentIndex = (currentIndex + 1) % models.length;
+        updateModel(currentIndex);
+      }
+
+      function prevItem() {
+        currentIndex = (currentIndex - 1 + models.length) % models.length;
+        updateModel(currentIndex);
+      }
+    </script>
+  </body>
+</html>
